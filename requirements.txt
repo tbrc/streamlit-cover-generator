@@ -2,4 +2,5 @@ streamlit
 pandas
 python-docx
 Pillow
+python-dotenv
 openai
