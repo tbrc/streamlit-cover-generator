@@ -19,10 +19,12 @@ from docx.oxml.ns import nsdecls
 # --------------------------------------------------
 # INITIAL SETUP
 # --------------------------------------------------
-load_dotenv()
+if os.path.exists(".env"):
+    load_dotenv()
+
 client = OpenAI(api_key=os.getenv("COVER_IMAGES_API_KEY"))
 
-BASE_DIR = os.getcwd()
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 TEMP_IMG = os.path.join(BASE_DIR, "temp/images")
 TEMP_DOC = os.path.join(BASE_DIR, "temp/docs")      
 ASSETS = os.path.join(BASE_DIR, "assets")
@@ -262,3 +264,4 @@ if excel_file and st.button("Generate Covers"):
 
     with open(zip_path, "rb") as f:
         st.download_button("⬇️ Download ZIP", f, file_name="cover_pages.zip")
+
