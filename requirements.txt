@@ -1,6 +1,7 @@
-streamlit
+streamlit==1.32.2
 pandas
 python-docx
 Pillow
 python-dotenv
 openai
+
