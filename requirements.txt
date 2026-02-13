@@ -5,5 +5,8 @@ Pillow
 python-dotenv
 openai
 openpyxl
+protobuf<5
+
+
 
 
