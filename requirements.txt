@@ -4,4 +4,6 @@ python-docx
 Pillow
 python-dotenv
 openai
+openpyxl
+
 
