@@ -6,6 +6,7 @@ import base64
 import streamlit as st
 import pandas as pd
 from datetime import datetime
+import datetime
 from PIL import Image
 from dotenv import load_dotenv
 
@@ -245,7 +246,9 @@ if excel_file and st.button("Generate Covers"):
         date = row["Published Date"]
         code = str(row["Report Code"])
 
-        date_str = date.strftime("%d %B %Y") if isinstance(date, pd.Timestamp) else str(date)
+        dt = datetime.datetime.strptime(date, "%A, %B %d, %Y")
+
+        date_str = dt.strftime("%d %B %Y")
 
         img = generate_cover_image(image_market)
         docx = create_cover_docx(original_market, date_str, code, img)
@@ -264,4 +267,5 @@ if excel_file and st.button("Generate Covers"):
 
     with open(zip_path, "rb") as f:
         st.download_button("⬇️ Download ZIP", f, file_name="cover_pages.zip")
+
 
