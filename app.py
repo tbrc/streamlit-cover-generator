@@ -39,6 +39,24 @@ os.makedirs(TEMP_DOC, exist_ok=True)
 # --------------------------------------------------
 # HELPERS
 # --------------------------------------------------
+
+def normalize_date(date_str):
+    # Define possible input formats
+    formats = [
+        "%A, %B %d, %Y",  # e.g. Thursday, January 1, 2026
+        "%m/%d/%Y",       # e.g. 1/1/2026
+        "%d/%m/%Y",       # e.g. 01/01/2026 (if day-first inputs appear)
+    ]
+    
+    for fmt in formats:
+        try:
+            dt = datetime.datetime.strptime(date_str.strip(), fmt)
+            return dt.strftime("%d %B %Y")
+        except ValueError:
+            continue
+    
+    raise ValueError(f"Date format not recognized: {date_str}")
+
 def clean_market_name(name):
     return re.sub(r"\s+Report\s+\d{4}$", "", name).strip()
 
@@ -245,9 +263,9 @@ if excel_file and st.button("Generate Covers"):
         date = row["Published Date"]
         code = str(row["Report Code"])
 
-        dt = datetime.datetime.strptime(date, "%A, %B %d, %Y")
+        #dt = datetime.datetime.strptime(date, "%A, %B %d, %Y")
 
-        date_str = dt.strftime("%d %B %Y")
+        date_str = normalize_date(date)
 
         img = generate_cover_image(image_market)
         docx = create_cover_docx(original_market, date_str, code, img)
@@ -266,6 +284,7 @@ if excel_file and st.button("Generate Covers"):
 
     with open(zip_path, "rb") as f:
         st.download_button("⬇️ Download ZIP", f, file_name="cover_pages.zip")
+
 
 
 
