@@ -85,8 +85,28 @@ def set_table_width(table, width_in_inches):
 # IMAGE GENERATION
 # --------------------------------------------------
 def generate_cover_image(market):
-    prompt = (
-        f"Generate a cover image in 16:9 ratio, 1200 pixels wide, on the {market}. No text needed. Only need real images, avoid illustrational images. Do not combine multiple visual elements into a single image. No collages, no layered imagery, no surreal or conceptual blending—keep the image simple, realistic, and immediately understandable. Ensure the image is a single unified scene. Avoid divided layouts, side-by-side compositions, split screens, panels, or any visually distinct sections."
+    prompt = ("""Create a realistic photographic cover image.
+
+        Scene:
+        A single, real-world scene clearly representing the {market}.
+        The subject must be immediately recognizable and directly related
+        to the market without symbolism or abstraction.
+        
+        Subject details:
+        One primary subject only. No secondary scenes or background concepts.
+        
+        Environment:
+        A real physical environment relevant to the market.
+        
+        Style:
+        Photorealistic, DSLR-quality, natural lighting, sharp focus.
+        
+        Constraints:
+        No text, no logos, no illustrations, no CGI, no collages,
+        no split layouts, no surreal elements.
+        """
+        #f"Generate a cover image in 16:9 ratio, 1200 pixels wide, on the {market}. No text needed. Only need real images, avoid illustrational images. Do not combine multiple visual elements into a single image. No collages, no layered imagery, no surreal or conceptual blending—keep the image simple, realistic, and immediately understandable. Ensure the image is a single unified scene. Avoid divided layouts, side-by-side compositions, split screens, panels, or any visually distinct sections."
+
     )
 
     response = client.images.generate(
@@ -266,6 +286,7 @@ if excel_file and st.button("Generate Covers"):
 
     with open(zip_path, "rb") as f:
         st.download_button("⬇️ Download ZIP", f, file_name="cover_pages.zip")
+
 
 
 
