@@ -157,7 +157,7 @@ def create_cover_docx(market, date_str, code, image_path):
     # Adjust font size based on character length
     market_len = len(market)
     if market_len <= 65:
-        run1.font.size = Pt(32)
+        run1.font.size = Pt(30)
     elif market_len <= 105:
         run1.font.size = Pt(24)
     else:
@@ -267,5 +267,6 @@ if excel_file and st.button("Generate Covers"):
 
     with open(zip_path, "rb") as f:
         st.download_button("⬇️ Download ZIP", f, file_name="cover_pages.zip")
+
 
 
