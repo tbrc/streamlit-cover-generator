@@ -86,8 +86,7 @@ def set_table_width(table, width_in_inches):
 # --------------------------------------------------
 def generate_cover_image(market):
     prompt = (
-        f"Generate a cover image in 16:9 ratio, 1200 pixels wide, for the (market). No text needed. Use only realistic photographic style imagery — avoid illustrations, graphics, or stylized artwork. Keep the image simple, natural, and professional with a single unified environment . Do not combine multiple separate scenes. No collages, layered imagery, surreal effects, or conceptual blending. Avoid split screens, panels, or divided layouts. Ensure natural lighting, clear composition, and immediate visual clarity suitable for a professional market report cover."
-
+        f"Generate a cover image in 16:9 ratio, 1200 pixels wide, on the {market}. No text needed. Only need real images, avoid illustrational images. Do not combine multiple visual elements into a single image. Avoid divided layouts, side-by-side compositions, split screens, no layered imagery, no surreal or conceptual blending—keep the image simple, realistic, and immediately understandable."
     )
 
     response = client.images.generate(
@@ -267,6 +266,7 @@ if excel_file and st.button("Generate Covers"):
 
     with open(zip_path, "rb") as f:
         st.download_button("⬇️ Download ZIP", f, file_name="cover_pages.zip")
+
 
 
 
