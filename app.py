@@ -40,22 +40,33 @@ os.makedirs(TEMP_DOC, exist_ok=True)
 # HELPERS
 # --------------------------------------------------
 
-def normalize_date(date_str):
-    # Define possible input formats
+def normalize_date(date_val):
+    # If it's already a pandas Timestamp or datetime, just format it
+    if isinstance(date_val, (pd.Timestamp, datetime.datetime, datetime.date)):
+        dt = pd.to_datetime(date_val)
+        return dt.strftime("%d %B %Y")
+    
+    # Otherwise, treat it as a string and try parsing
+    date_str = str(date_val).strip()
     formats = [
-        "%A, %B %d, %Y",  # e.g. Thursday, January 1, 2026
-        "%m/%d/%Y",       # e.g. 1/1/2026
-        "%d/%m/%Y",       # e.g. 01/01/2026 (if day-first inputs appear)
+        "%A, %B %d, %Y",  # Thursday, January 1, 2026
+        "%m/%d/%Y",       # 1/1/2026
+        "%d/%m/%Y",       # 01/01/2026
     ]
     
     for fmt in formats:
         try:
-            dt = datetime.datetime.strptime(date_str.strip(), fmt)
+            dt = datetime.datetime.strptime(date_str, fmt)
             return dt.strftime("%d %B %Y")
         except ValueError:
             continue
     
-    raise ValueError(f"Date format not recognized: {date_str}")
+    # Fallback: let pandas try to infer automatically
+    try:
+        dt = pd.to_datetime(date_str, errors="raise")
+        return dt.strftime("%d %B %Y")
+    except Exception:
+        raise ValueError(f"Unrecognized date format: {date_val}")
 
 def clean_market_name(name):
     return re.sub(r"\s+Report\s+\d{4}$", "", name).strip()
@@ -284,6 +295,7 @@ if excel_file and st.button("Generate Covers"):
 
     with open(zip_path, "rb") as f:
         st.download_button("⬇️ Download ZIP", f, file_name="cover_pages.zip")
+
 
 
 
