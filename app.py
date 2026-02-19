@@ -256,45 +256,71 @@ def create_cover_docx(market, date_str, code, image_path):
 st.set_page_config("Cover Page Generator", layout="centered")
 st.title("📘 Market Report Cover Page Generator")
 
+# --- Option 1: Excel Upload ---
 excel_file = st.file_uploader("Upload Excel File", type=["xlsx"])
 
-if excel_file and st.button("Generate Covers"):
-    df = pd.read_excel(excel_file)
+# --- Option 2: Manual Entry ---
+st.subheader("Or enter details manually")
+market_input = st.text_input("Market Name")
+date_input = st.text_input("Published Date (e.g. Monday, February 16, 2026)")
+code_input = st.text_input("Report Code")
 
-    progress = st.progress(0)
+# --- Generate Button ---
+if st.button("Generate Covers"):
     docs = []
-
     status_box = st.empty()
     status_messages = []
 
-    for i, row in df.iterrows():
-        original_market = str(row["Product Name"]).strip()   # EXACT Excel value
-        image_market = clean_market_name(original_market)    # Only for image
+    if excel_file:
+        # ✅ Excel-driven batch generation
+        df = pd.read_excel(excel_file)
+        progress = st.progress(0)
 
-        date = row["Published Date"]
-        code = str(row["Report Code"])
+        for i, row in df.iterrows():
+            original_market = str(row["Product Name"]).strip()
+            image_market = clean_market_name(original_market)
 
-        #dt = datetime.datetime.strptime(date, "%A, %B %d, %Y")
+            date = row["Published Date"]
+            code = str(row["Report Code"])
 
-        date_str = normalize_date(date)
+            #dt = datetime.datetime.strptime(date, "%A, %B %d, %Y")
+            date_str = normalize_date(date)
+
+            img = generate_cover_image(image_market)
+            docx = create_cover_docx(original_market, date_str, code, img)
+            docs.append(docx)
+
+            status_messages.append(f"✅ DOCX generated for **{original_market}**")
+            status_box.markdown("<br>".join(status_messages), unsafe_allow_html=True)
+            progress.progress((i + 1) / len(df))
+
+    elif market_input and date_input and code_input:
+        # ✅ Manual single entry
+        original_market = market_input.strip()
+        image_market = clean_market_name(original_market)
+
+        #dt = datetime.datetime.strptime(date_input, "%A, %B %d, %Y")
+        date_str = normalize_date(date_input)
 
         img = generate_cover_image(image_market)
-        docx = create_cover_docx(original_market, date_str, code, img)
+        docx = create_cover_docx(original_market, date_str, code_input, img)
         docs.append(docx)
 
-        # ✅ STATUS UPDATE AFTER COMPLETION
         status_messages.append(f"✅ DOCX generated for **{original_market}**")
         status_box.markdown("<br>".join(status_messages), unsafe_allow_html=True)
 
-        progress.progress((i + 1) / len(df))
+    else:
+        st.warning("Please upload an Excel file OR fill all three text fields.")
 
-    zip_path = os.path.join(BASE_DIR, "cover_pages.zip")
-    with zipfile.ZipFile(zip_path, "w") as z:
-        for d in docs:
-            z.write(d, arcname=os.path.basename(d))
+    # --- ZIP & Download ---
+    if docs:
+        zip_path = os.path.join(BASE_DIR, "cover_pages.zip")
+        with zipfile.ZipFile(zip_path, "w") as z:
+            for d in docs:
+                z.write(d, arcname=os.path.basename(d))
 
-    with open(zip_path, "rb") as f:
-        st.download_button("⬇️ Download ZIP", f, file_name="cover_pages.zip")
+        with open(zip_path, "rb") as f:
+            st.download_button("⬇️ Download ZIP", f, file_name="cover_pages.zip")
 
 
 
